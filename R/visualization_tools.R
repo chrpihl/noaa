@@ -1,19 +1,65 @@
-#' Title
+#' This method returns a ggplot2 layer that contains the custom geom for plotting earthquake data on
+#' a timeline.
+#' The color aesthetic indicates the number of deaths as a result of the earthquake and the size
+#' aesthetic indicates the
+#' earthquake magnitude on the Richter scale.
+#' A layer is a combination of data, stat and geom with a potential position adjustment.
 #'
-#' @param mapping
-#' @param data
-#' @param stat
-#' @param position
-#' @param na.rm
-#' @param show.legend
-#' @param inherit.aes
-#' @param ...
+#' @param mapping Set of aesthetic mappings created by aes or aes_. If specified and inherit.aes =
+#'                                                                  TRUE (the default),
+#'                it is combined with the default mapping at the top level of the plot.
+#'                You must supply mapping if there is no plot mapping.
+#'                "x" is the date of the earthquake.
+#'                "y" is an optional aesthetic indicating a stratification for which a separate
+#'                timeline will be plotted for each value of the factor (for instance "country").
+#'                "size" is the magnitude of the earthquake measured on the Richter scale.
+#'                "color" is the number of deaths caused by the earthquake.
+#' @param data The data to be displayed in this layer. There are three options:
+#'             If NULL, the default, the data is inherited from the plot data as specified in the
+#'             call to ggplot. A data.frame, or other object, will override the plot data.
+#'             All objects will be fortified to produce a data frame.
+#'             See fortify for which variables will be created.
+#'             A function will be called with a single argument, the plot data.
+#'             The return value must be a data.frame., and will be used as the layer data.
+#' @param stat The statistical transformation to use on the data for this layer, as a string.
+#' @param position Position adjustment, either as a string, or the result of a call to a position
+#' adjustment function.
+#' @param na.rm If FALSE missing values are removed with a warning. If TRUE missing values are
+#' silently removed.
+#' @param show.legend logical. Should this layer be included in the legends? NA, the default,
+#' includes if any aesthetics are mapped. FALSE never includes, and TRUE always includes
+#' @param inherit.aes If FALSE, overrides the default aesthetics, rather than combining with them.
+#'                    This is most useful for helper functions that define both data and aesthetics
+#'                    and shouldn't inherit behaviour from the default plot specification, e.g.
+#'                    borders.
 #'
-#' @return
+#' @return A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
+#' timeline.
+#'
 #' @export
+#' @importFrom dplyr filter
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 ggplot_build
+#' @importFrom ggplot2 ggplot_gtable
+#' @importFrom ggplot2 labs
 #' @importFrom ggplot2 layer
+#' @importFrom grid grid.draw
+#' @importFrom magrittr %>%
+#' @importFrom readr read_delim
 #'
 #' @examples
+#' p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+#'                                           delim = "\t") %>%
+#'      eq_clean_data() %>% eq_location_clean() %>%
+#'      filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
+#'      ggplot() +
+#'      geom_timeline(data=earthquake_data, aes(x = date,
+#'        colour = deaths,
+#'        size = magnitude)) +
+#'      labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+#' gt <- ggplot_gtable(ggplot_build(p))
+#' gt$layout$clip[gt$layout$name=="panel"] = "off"
+#' grid.draw(gt)
 geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
                           position = "identity", na.rm = FALSE,
                           show.legend = NA, inherit.aes = TRUE, ...) {
@@ -25,22 +71,26 @@ geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
   )
 }
 
-#' Title
+#' Function used internally to construct grid objects for the layer constructed by "geom_timeline".
 #'
-#' @param data
-#' @param panel_scales
-#' @param coord
+#' @param data Data passed in by call to "geom_timeline" function.
+#' @param panel_scales Used to scale data coordinates to fit in the plot.
+#' @param coord Coordinates of the data in the plot.
+#' @return A grid object list ready to be added to a ggplot layer.
 #'
-#' @return
-#' @export
-#' @importFrom ggplot2 ggproto, Geom, aes, draw_key_point
-#' @importFrom grid circleGrob, gpar, polylineGrob, gList
-#'
-#' @examples
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 draw_key_point
+#' @importFrom ggplot2 Geom
+#' @importFrom ggplot2 ggproto
+#' @importFrom grid circleGrob
+#' @importFrom grid gpar
+#' @importFrom grid polylineGrob
+#' @importFrom grid gList
 GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
                          required_aes = c("x", "size", "colour"),
-                         default_aes = ggplot2::aes(y = 0.3, colour = "grey", size = 1.0, alpha = 0.6,
-                                                   shape = 21, fill = "grey", stroke = 1.0),
+                         default_aes = ggplot2::aes(y = 0.3, colour = "grey", size = 1.0,
+                                                    alpha = 0.6, shape = 21, fill = "grey",
+                                                    stroke = 1.0),
                          draw_key = ggplot2::draw_key_point,
                          draw_group = function(data, panel_scales, coord) {
                            coords <- coord$transform(data, panel_scales)
@@ -66,13 +116,23 @@ GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
                            return(grid::gList(points, lines))
                          })
 
-#' Title
+#' Custom theme that makes the earthquake visualization prettier and expands the plot margins to
+#' allow all text to fit inside the plot.
 #'
-#' @return
+#' @return A ggplot theme which can be applied to ggplot layers.
 #' @export
-#' @importFrom ggplot2 theme, element_blank, element_line
+#' @import ggplot2
+#' @importFrom dplyr filter
+#' @importFrom magrittr %>%
+#' @importFrom readr read_delim
 #'
 #' @examples
+#' readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\t") %>%
+#' eq_clean_data() %>%
+#' filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
+#' ggplot(aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) + theme_time() +
+#' geom_timeline() +
+#' labs(x = "DATE", color = "# deaths", size = "Richter scale value")
 theme_time <- function() {
   ggplot2::theme(plot.background = ggplot2::element_blank(),
                  panel.background = ggplot2::element_blank(),
@@ -83,22 +143,60 @@ theme_time <- function() {
   )
 }
 
-#' Title
+#' This method returns a ggplot2 layer that contains the custom geom for plotting earthquake data on
+#' a timeline with text labels for each earthquake. The color aesthetic indicates the number of
+#' deaths as a result of the earthquake and the size aesthetic indicates the earthquake magnitude on
+#' the Richter scale. The n_max aesthetic is optional and indicates that only the n_max largest
+#' (measured by Richter scale magnitude) earthquakes should be labelled.
+#' A layer is a combination of data, stat and geom with a potential position adjustment.
 #'
-#' @param mapping
-#' @param data
-#' @param stat
-#' @param position
-#' @param na.rm
-#' @param show.legend
-#' @param inherit.aes
-#' @param ...
+#' @param mapping Set of aesthetic mappings created by aes or aes_. If specified and
+#' inherit.aes = TRUE (the default), it is combined with the default mapping at the top level of the
+#' plot. You must supply mapping if there is no plot mapping.
+#' "x" is the date of the earthquake.
+#' "size" is the magnitude of the earthquake measured on the Richter scale.
+#' "label" is the column containing the text that should be used as a label.
+#' @param data The data to be displayed in this layer. There are three options:
+#'             If NULL, the default, the data is inherited from the plot data as specified in the
+#'             call to ggplot. A data.frame, or other object, will override the plot data. All
+#'             objects will be fortified to produce a data frame. See fortify for which variables
+#'             will be created. A function will be called with a single argument, the plot data.
+#'             The return value must be a data.frame., and will be used as the layer data.
+#' @param stat The statistical transformation to use on the data for this layer, as a string.
+#' @param position Position adjustment, either as a string, or the result of a call to a position
+#' adjustment function.
+#' @param na.rm If FALSE missing values are removed with a warning. If TRUE missing values are
+#' silently removed.
+#' @param show.legend logical. Should this layer be included in the legends? NA, the default,
+#' includes if any aesthetics are mapped. FALSE never includes, and TRUE always includes
+#' @param inherit.aes If FALSE, overrides the default aesthetics, rather than combining with them.
+#'                    This is most useful for helper functions that define both data and aesthetics
+#'                    and shouldn't inherit behaviour from the default plot specification, e.g.
+#'                    borders.
 #'
-#' @return
+#' @return A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
+#' timeline with labels.
 #' @export
-#' @importFrom ggplot2 layer
+#' @import ggplot2
+#' @importFrom dplyr filter
+#' @importFrom grid grid.draw
+#' @importFrom magrittr %>%
+#' @importFrom readr read_delim
 #'
 #' @examples
+#' p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+#'                                           delim = "\t") %>%
+#'      eq_clean_data() %>% eq_location_clean() %>%
+#'      filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
+#'      ggplot() +
+#'      geom_timeline(data=earthquake_data, aes(x = date,
+#'        colour = deaths,
+#'        size = magnitude)) +
+#'      geom_timeline_label(aes(label = LOCATION_NAME, n_max = 5)) +
+#'      labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+#' gt <- ggplot_gtable(ggplot_build(p))
+#' gt$layout$clip[gt$layout$name=="panel"] = "off"
+#' grid.draw(gt)
 geom_timeline_label <- function(mapping = NULL, data = NULL, stat = "identity",
                                 position = "identity", na.rm = FALSE,
                                 show.legend = NA, inherit.aes = TRUE, ...) {
@@ -110,24 +208,24 @@ geom_timeline_label <- function(mapping = NULL, data = NULL, stat = "identity",
   )
 }
 
-#' Title
+#' Function used internally to construct grid objects for the layer constructed by
+#' "geom_timeline_label".
 #'
-#' @param data
-#' @param panel_scales
-#' @param coord
+#' @param data Data passed in by call to "geom_timeline_label" function.
+#' @param panel_scales Used to scale data coordinates to fit in the plot.
+#' @param coord Coordinates of the data in the plot.
 #'
-#' @return
-#' @export
+#' @return A grid object list ready to be added to a ggplot layer.
+
 #' @importFrom dplyr top_n
-#' @importFrom ggplot2 ggproto, Geom, aes, draw_key_polygon
-#' @importFrom grid textGrob, polylineGrob, gList
+#' @import ggplot2
+#' @import grid
 #' @importFrom magrittr %>%
-#'
-#' @examples
 GeomTimelineLabel <- ggplot2::ggproto("GeomTimelineLabel", ggplot2::Geom,
                                  required_aes = c("x", "label", "size"),
-                                 default_aes = ggplot2::aes(y = 0.3, n_max = 10000, stroke = 1.0, size = 1.0,
-                                                            colour = "grey", fill = "grey"),
+                                 default_aes = ggplot2::aes(y = 0.3, n_max = 10000, stroke = 1.0,
+                                                            size = 1.0, colour = "grey",
+                                                            fill = "grey"),
                                  draw_key = ggplot2::draw_key_polygon,
                                  draw_group = function(data, panel_scales, coord) {
                                    data <- data %>% top_n(n = as.integer(data$n_max[1]), size)

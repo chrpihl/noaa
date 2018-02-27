@@ -2,13 +2,23 @@
 % Please edit documentation in R/clean_data.R
 \name{eq_location_clean}
 \alias{eq_location_clean}
-\title{Title}
+\title{Prepares a NOAA data frame by stripping COUNTRY from the LOCATION_NAME and converting
+LOCATION_NAME to title case.}
 \usage{
 eq_location_clean(raw_noaa_df)
 }
 \arguments{
-\item{raw_noaa_df}{}
+\item{raw_noaa_df}{This is the raw data frame read in directly from the NOAA csv file.}
+}
+\value{
+The clean data frame with title cased LOCATION_NAME without COUNTRY part.
 }
 \description{
-Title
+Prepares a NOAA data frame by stripping COUNTRY from the LOCATION_NAME and converting
+LOCATION_NAME to title case.
+}
+\examples{
+raw_df <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+                                               delim = "\\t")
+location_cleaned_df <- eq_location_clean(raw_df)
 }

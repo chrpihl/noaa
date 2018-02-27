@@ -2,13 +2,21 @@
 % Please edit documentation in R/clean_data.R
 \name{eq_clean_data}
 \alias{eq_clean_data}
-\title{Title}
+\title{Prepares a NOAA data frame by adding a DATE column and converting data types of existing columns.}
 \usage{
 eq_clean_data(raw_noaa_df)
 }
 \arguments{
-\item{raw_noaa_df}{}
+\item{raw_noaa_df}{This is the raw data frame read in directly from the NOAA csv file.}
+}
+\value{
+The clean data frame with DATE column and correct data types.
 }
 \description{
-Title
+Prepares a NOAA data frame by adding a DATE column and converting data types of existing columns.
+}
+\examples{
+raw_df <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+                                               delim = "\\t")
+clean_df <- eq_clean_data(raw_df)
 }

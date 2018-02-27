@@ -2,10 +2,23 @@
 % Please edit documentation in R/visualization_tools.R
 \name{theme_time}
 \alias{theme_time}
-\title{Title}
+\title{Custom theme that makes the earthquake visualization prettier and expands the plot margins to
+allow all text to fit inside the plot.}
 \usage{
 theme_time()
 }
+\value{
+A ggplot theme which can be applied to ggplot layers.
+}
 \description{
-Title
+Custom theme that makes the earthquake visualization prettier and expands the plot margins to
+allow all text to fit inside the plot.
+}
+\examples{
+readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\\t") \%>\%
+eq_clean_data() \%>\%
+filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY \%in\% c("CHINA", "USA")) \%>\%
+ggplot(aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) + theme_time() +
+geom_timeline() +
+labs(x = "DATE", color = "# deaths", size = "Richter scale value")
 }

@@ -2,15 +2,75 @@
 % Please edit documentation in R/visualization_tools.R
 \name{geom_timeline}
 \alias{geom_timeline}
-\title{Title}
+\title{This method returns a ggplot2 layer that contains the custom geom for plotting earthquake data on
+a timeline.
+The color aesthetic indicates the number of deaths as a result of the earthquake and the size
+aesthetic indicates the
+earthquake magnitude on the Richter scale.
+A layer is a combination of data, stat and geom with a potential position adjustment.}
 \usage{
 geom_timeline(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", na.rm = FALSE, show.legend = NA,
   inherit.aes = TRUE, ...)
 }
 \arguments{
-\item{...}{}
+\item{mapping}{Set of aesthetic mappings created by aes or aes_. If specified and inherit.aes =
+                                                  TRUE (the default),
+it is combined with the default mapping at the top level of the plot.
+You must supply mapping if there is no plot mapping.
+"x" is the date of the earthquake.
+"y" is an optional aesthetic indicating a stratification for which a separate
+timeline will be plotted for each value of the factor (for instance "country").
+"size" is the magnitude of the earthquake measured on the Richter scale.
+"color" is the number of deaths caused by the earthquake.}
+
+\item{data}{The data to be displayed in this layer. There are three options:
+If NULL, the default, the data is inherited from the plot data as specified in the
+call to ggplot. A data.frame, or other object, will override the plot data.
+All objects will be fortified to produce a data frame.
+See fortify for which variables will be created.
+A function will be called with a single argument, the plot data.
+The return value must be a data.frame., and will be used as the layer data.}
+
+\item{stat}{The statistical transformation to use on the data for this layer, as a string.}
+
+\item{position}{Position adjustment, either as a string, or the result of a call to a position
+adjustment function.}
+
+\item{na.rm}{If FALSE missing values are removed with a warning. If TRUE missing values are
+silently removed.}
+
+\item{show.legend}{logical. Should this layer be included in the legends? NA, the default,
+includes if any aesthetics are mapped. FALSE never includes, and TRUE always includes}
+
+\item{inherit.aes}{If FALSE, overrides the default aesthetics, rather than combining with them.
+This is most useful for helper functions that define both data and aesthetics
+and shouldn't inherit behaviour from the default plot specification, e.g.
+borders.}
+}
+\value{
+A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
+timeline.
 }
 \description{
-Title
+This method returns a ggplot2 layer that contains the custom geom for plotting earthquake data on
+a timeline.
+The color aesthetic indicates the number of deaths as a result of the earthquake and the size
+aesthetic indicates the
+earthquake magnitude on the Richter scale.
+A layer is a combination of data, stat and geom with a potential position adjustment.
+}
+\examples{
+p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+                                          delim = "\\t") \%>\%
+     eq_clean_data() \%>\% eq_location_clean() \%>\%
+     filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY \%in\% c("CHINA", "USA")) \%>\%
+     ggplot() +
+     geom_timeline(data=earthquake_data, aes(x = date,
+       colour = deaths,
+       size = magnitude)) +
+     labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+gt <- ggplot_gtable(ggplot_build(p))
+gt$layout$clip[gt$layout$name=="panel"] = "off"
+grid.draw(gt)
 }

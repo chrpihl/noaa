@@ -3,15 +3,24 @@
 \docType{data}
 \name{GeomTimelineLabel}
 \alias{GeomTimelineLabel}
-\title{Title}
+\title{Function used internally to construct grid objects for the layer constructed by
+"geom_timeline_label".}
 \format{An object of class \code{GeomTimelineLabel} (inherits from \code{Geom}, \code{ggproto}) of length 5.}
 \usage{
 GeomTimelineLabel
 }
 \arguments{
-\item{coord}{}
+\item{data}{Data passed in by call to "geom_timeline_label" function.}
+
+\item{panel_scales}{Used to scale data coordinates to fit in the plot.}
+
+\item{coord}{Coordinates of the data in the plot.}
+}
+\value{
+A grid object list ready to be added to a ggplot layer.
 }
 \description{
-Title
+Function used internally to construct grid objects for the layer constructed by
+"geom_timeline_label".
 }
 \keyword{datasets}

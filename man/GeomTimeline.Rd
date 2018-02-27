@@ -3,15 +3,22 @@
 \docType{data}
 \name{GeomTimeline}
 \alias{GeomTimeline}
-\title{Title}
+\title{Function used internally to construct grid objects for the layer constructed by "geom_timeline".}
 \format{An object of class \code{GeomTimeline} (inherits from \code{Geom}, \code{ggproto}) of length 5.}
 \usage{
 GeomTimeline
 }
 \arguments{
-\item{coord}{}
+\item{data}{Data passed in by call to "geom_timeline" function.}
+
+\item{panel_scales}{Used to scale data coordinates to fit in the plot.}
+
+\item{coord}{Coordinates of the data in the plot.}
+}
+\value{
+A grid object list ready to be added to a ggplot layer.
 }
 \description{
-Title
+Function used internally to construct grid objects for the layer constructed by "geom_timeline".
 }
 \keyword{datasets}
