@@ -17,8 +17,10 @@ allow all text to fit inside the plot.
 \examples{
 readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\\t") \%>\%
 eq_clean_data() \%>\%
-filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY \%in\% c("CHINA", "USA")) \%>\%
-ggplot(aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) + theme_time() +
+dplyr::filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML),
+              COUNTRY \%in\% c("CHINA", "USA")) \%>\%
+ggplot2::ggplot(ggplot2::aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) +
+theme_time() +
 geom_timeline() +
-labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+ggplot2::labs(x = "DATE", color = "# deaths", size = "Richter scale value")
 }

@@ -32,34 +32,37 @@
 #'                    This is most useful for helper functions that define both data and aesthetics
 #'                    and shouldn't inherit behaviour from the default plot specification, e.g.
 #'                    borders.
+#' @param ... Additional parameters passed to the layer.
 #'
 #' @return A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
 #' timeline.
 #'
 #' @export
+#' @importFrom dplyr %>%
 #' @importFrom dplyr filter
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 ggplot_build
 #' @importFrom ggplot2 ggplot_gtable
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 layer
 #' @importFrom grid grid.draw
-#' @importFrom magrittr %>%
 #' @importFrom readr read_delim
 #'
 #' @examples
 #' p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
 #'                                           delim = "\t") %>%
 #'      eq_clean_data() %>% eq_location_clean() %>%
-#'      filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
-#'      ggplot() +
-#'      geom_timeline(data=earthquake_data, aes(x = date,
-#'        colour = deaths,
-#'        size = magnitude)) +
-#'      labs(x = "DATE", color = "# deaths", size = "Richter scale value")
-#' gt <- ggplot_gtable(ggplot_build(p))
+#'      dplyr::filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML),
+#'                    COUNTRY %in% c("CHINA", "USA")) %>%
+#'      ggplot2::ggplot() +
+#'      geom_timeline(ggplot2::aes(x = DATE,
+#'        colour = DEATHS,
+#'        size = EQ_MAG_ML)) +
+#'      ggplot2::labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+#' gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
 #' gt$layout$clip[gt$layout$name=="panel"] = "off"
-#' grid.draw(gt)
+#' grid::grid.draw(gt)
 geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
                           position = "identity", na.rm = FALSE,
                           show.legend = NA, inherit.aes = TRUE, ...) {
@@ -73,9 +76,6 @@ geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
 
 #' Function used internally to construct grid objects for the layer constructed by "geom_timeline".
 #'
-#' @param data Data passed in by call to "geom_timeline" function.
-#' @param panel_scales Used to scale data coordinates to fit in the plot.
-#' @param coord Coordinates of the data in the plot.
 #' @return A grid object list ready to be added to a ggplot layer.
 #'
 #' @importFrom ggplot2 aes
@@ -121,25 +121,30 @@ GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
 #'
 #' @return A ggplot theme which can be applied to ggplot layers.
 #' @export
-#' @import ggplot2
+#' @importFrom dplyr %>%
 #' @importFrom dplyr filter
-#' @importFrom magrittr %>%
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 labs
+#' @importFrom grid unit
 #' @importFrom readr read_delim
 #'
 #' @examples
 #' readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\t") %>%
 #' eq_clean_data() %>%
-#' filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
-#' ggplot(aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) + theme_time() +
+#' dplyr::filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML),
+#'               COUNTRY %in% c("CHINA", "USA")) %>%
+#' ggplot2::ggplot(ggplot2::aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) +
+#' theme_time() +
 #' geom_timeline() +
-#' labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+#' ggplot2::labs(x = "DATE", color = "# deaths", size = "Richter scale value")
 theme_time <- function() {
   ggplot2::theme(plot.background = ggplot2::element_blank(),
                  panel.background = ggplot2::element_blank(),
                  axis.line.x = ggplot2::element_line(colour = 'black', size=0.5, linetype='solid'),
                  legend.position = "bottom",
-                 plot.margin=unit(c(4,4,0,0), "cm"),
-                 panel.spacing =unit(c(4,4,0,0), "cm")
+                 plot.margin=grid::unit(c(4,4,0,0), "cm"),
+                 panel.spacing =grid::unit(c(4,4,0,0), "cm")
   )
 }
 
@@ -173,30 +178,36 @@ theme_time <- function() {
 #'                    This is most useful for helper functions that define both data and aesthetics
 #'                    and shouldn't inherit behaviour from the default plot specification, e.g.
 #'                    borders.
+#' @param ... Additional parameters passed to the layer.
 #'
 #' @return A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
 #' timeline with labels.
+#'
 #' @export
-#' @import ggplot2
+#' @importFrom dplyr %>%
 #' @importFrom dplyr filter
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 ggplot_gtable
 #' @importFrom grid grid.draw
-#' @importFrom magrittr %>%
 #' @importFrom readr read_delim
 #'
 #' @examples
 #' p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
 #'                                           delim = "\t") %>%
 #'      eq_clean_data() %>% eq_location_clean() %>%
-#'      filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
-#'      ggplot() +
-#'      geom_timeline(data=earthquake_data, aes(x = date,
-#'        colour = deaths,
-#'        size = magnitude)) +
-#'      geom_timeline_label(aes(label = LOCATION_NAME, n_max = 5)) +
-#'      labs(x = "DATE", color = "# deaths", size = "Richter scale value")
-#' gt <- ggplot_gtable(ggplot_build(p))
+#'      dplyr::filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML),
+#'                    COUNTRY %in% c("CHINA", "USA")) %>%
+#'      ggplot2::ggplot(ggplot2::aes(x = DATE,
+#'        colour = DEATHS,
+#'        size = EQ_MAG_ML)) +
+#'      geom_timeline() +
+#'      geom_timeline_label(ggplot2::aes(label = LOCATION_NAME, n_max = 5)) +
+#'      ggplot2::labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+#' gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
 #' gt$layout$clip[gt$layout$name=="panel"] = "off"
-#' grid.draw(gt)
+#' grid::grid.draw(gt)
 geom_timeline_label <- function(mapping = NULL, data = NULL, stat = "identity",
                                 position = "identity", na.rm = FALSE,
                                 show.legend = NA, inherit.aes = TRUE, ...) {
@@ -211,16 +222,18 @@ geom_timeline_label <- function(mapping = NULL, data = NULL, stat = "identity",
 #' Function used internally to construct grid objects for the layer constructed by
 #' "geom_timeline_label".
 #'
-#' @param data Data passed in by call to "geom_timeline_label" function.
-#' @param panel_scales Used to scale data coordinates to fit in the plot.
-#' @param coord Coordinates of the data in the plot.
-#'
 #' @return A grid object list ready to be added to a ggplot layer.
-
+#'
+#' @importFrom dplyr %>%
 #' @importFrom dplyr top_n
-#' @import ggplot2
-#' @import grid
-#' @importFrom magrittr %>%
+#' @importFrom ggplot2 ggproto
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 Geom
+#' @importFrom ggplot2 draw_key_polygon
+#' @importFrom grid textGrob
+#' @importFrom grid polylineGrob
+#' @importFrom grid gpar
+#' @importFrom grid gList
 GeomTimelineLabel <- ggplot2::ggproto("GeomTimelineLabel", ggplot2::Geom,
                                  required_aes = c("x", "label", "size"),
                                  default_aes = ggplot2::aes(y = 0.3, n_max = 10000, stroke = 1.0,
@@ -236,7 +249,7 @@ GeomTimelineLabel <- ggplot2::ggproto("GeomTimelineLabel", ggplot2::Geom,
                                      x = unit(coords$x, "npc"),
                                      y = unit(coords$y + offset, "npc"),
                                      just = c("left", "bottom"),
-                                     gp = gpar(fontsize = 10, col = 'black'),
+                                     gp = grid::gpar(fontsize = 10, col = 'black'),
                                      rot = 45
                                    )
 
@@ -251,16 +264,3 @@ GeomTimelineLabel <- ggplot2::ggproto("GeomTimelineLabel", ggplot2::Geom,
 
                                    return(grid::gList(names, lines))
                                  })
-
-##clean_df %>% filter(YEAR >= 2000, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
-#p <- clean_df %>% filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY %in% c("CHINA", "USA")) %>%
-#  ggplot(aes(x = DATE, y = COUNTRY, colour = DEATHS, size = EQ_MAG_ML)) + theme_time() +
-#  geom_timeline() +
-#  geom_timeline_label(aes(label = LOCATION_NAME, n_max = 5)) +
-#  labs(x = "DATE", color = "# deaths", size = "Richter scale value")
-#gt <- ggplot_gtable(ggplot_build(p))
-#gt$layout$clip[gt$layout$name=="panel"] = "off"
-#grid.draw(gt)
-## Clear with "dev.off()"
-##dev.off()
-## clean_df %>% filter(YEAR >= 2010, !is.na(DEATHS), !is.na(EQ_MAG_ML)) %>% select(DATE, DEATHS, EQ_MAG_ML)

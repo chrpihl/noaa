@@ -43,6 +43,8 @@ includes if any aesthetics are mapped. FALSE never includes, and TRUE always inc
 This is most useful for helper functions that define both data and aesthetics
 and shouldn't inherit behaviour from the default plot specification, e.g.
 borders.}
+
+\item{...}{Additional parameters passed to the layer.}
 }
 \value{
 A ggplot2 layer which contains the custom geom for visualizing earthquake data on a
@@ -60,14 +62,15 @@ A layer is a combination of data, stat and geom with a potential position adjust
 p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
                                           delim = "\\t") \%>\%
      eq_clean_data() \%>\% eq_location_clean() \%>\%
-     filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML), COUNTRY \%in\% c("CHINA", "USA")) \%>\%
-     ggplot() +
-     geom_timeline(data=earthquake_data, aes(x = date,
-       colour = deaths,
-       size = magnitude)) +
-     geom_timeline_label(aes(label = LOCATION_NAME, n_max = 5)) +
-     labs(x = "DATE", color = "# deaths", size = "Richter scale value")
-gt <- ggplot_gtable(ggplot_build(p))
+     dplyr::filter(YEAR >= 1900, !is.na(DEATHS), !is.na(EQ_MAG_ML),
+                   COUNTRY \%in\% c("CHINA", "USA")) \%>\%
+     ggplot2::ggplot(ggplot2::aes(x = DATE,
+       colour = DEATHS,
+       size = EQ_MAG_ML)) +
+     geom_timeline() +
+     geom_timeline_label(ggplot2::aes(label = LOCATION_NAME, n_max = 5)) +
+     ggplot2::labs(x = "DATE", color = "# deaths", size = "Richter scale value")
+gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
 gt$layout$clip[gt$layout$name=="panel"] = "off"
-grid.draw(gt)
+grid::grid.draw(gt)
 }

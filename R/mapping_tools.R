@@ -9,12 +9,12 @@
 #' overlayed.
 #'
 #' @export
+#' @importFrom dplyr %>%
 #' @importFrom dplyr filter
 #' @importFrom leaflet addTiles
 #' @importFrom leaflet addCircleMarkers
 #' @importFrom leaflet leaflet
 #' @importFrom lubridate year
-#' @importFrom magrittr %>%
 #' @importFrom readr read_delim
 #'
 #' @examples
@@ -40,14 +40,15 @@ eq_map <- function(df, annot_col) {
 #' @return A list of popup-texts for the earthquake observations given as input.
 #'
 #' @export
+#' @importFrom dplyr "%>%"
 #' @importFrom dplyr filter
 #' @importFrom dplyr mutate
 #' @importFrom lubridate year
-#' @importFrom magrittr %>%
 #' @importFrom readr read_delim
 #'
 #' @examples
-#' readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\t") %>%
+#' readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+#'                   delim = "\t") %>%
 #' eq_clean_data() %>%
 #' dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 #' dplyr::mutate(popup_text = eq_create_label(.)) %>%

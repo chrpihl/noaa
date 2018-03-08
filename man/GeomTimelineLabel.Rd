@@ -9,13 +9,6 @@
 \usage{
 GeomTimelineLabel
 }
-\arguments{
-\item{data}{Data passed in by call to "geom_timeline_label" function.}
-
-\item{panel_scales}{Used to scale data coordinates to fit in the plot.}
-
-\item{coord}{Coordinates of the data in the plot.}
-}
 \value{
 A grid object list ready to be added to a ggplot layer.
 }

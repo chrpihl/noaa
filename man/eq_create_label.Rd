@@ -22,7 +22,8 @@ total number of deaths. If any of this information is not available, it will not
 popup-text.
 }
 \examples{
-readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim = "\\t") \%>\%
+readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"),
+                  delim = "\\t") \%>\%
 eq_clean_data() \%>\%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%
 dplyr::mutate(popup_text = eq_create_label(.)) \%>\%
