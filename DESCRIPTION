@@ -16,6 +16,8 @@ Imports: ggplot2,
          magrittr,
          readr,
          tools
-Suggests: knitr,
-    rmarkdown
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr

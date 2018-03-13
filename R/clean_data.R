@@ -12,6 +12,13 @@
 #'                                                delim = "\t")
 #' clean_df <- eq_clean_data(raw_df)
 eq_clean_data <- function(raw_noaa_df) {
+  if (nrow(raw_noaa_df) == 0) {
+    stop("Data frame input is empty")
+  }
+  required_cols <- c("YEAR", "MONTH", "DAY", "LATITUDE", "LONGITUDE", "DEATHS")
+  if (!all(required_cols %in% colnames(raw_noaa_df))) {
+    stop(paste("Data frame must have columns:", required_cols))
+  }
   # Add Date column created by uniting the year, month, day and converting it to the Date class
   # How should we handle NA's in any of the parts?
   raw_noaa_df$DATE <- as.Date(paste0(raw_noaa_df$YEAR, "-", raw_noaa_df$MONTH, "-",
@@ -30,7 +37,7 @@ eq_clean_data <- function(raw_noaa_df) {
 #' @param raw_noaa_df This is the raw data frame read in directly from the NOAA csv file.
 #'
 #' @return The clean data frame with title cased LOCATION_NAME without COUNTRY part.
-
+#'
 #' @export
 #' @importFrom readr read_delim
 #' @importFrom tools toTitleCase
@@ -40,6 +47,9 @@ eq_clean_data <- function(raw_noaa_df) {
 #'                                                delim = "\t")
 #' location_cleaned_df <- eq_location_clean(raw_df)
 eq_location_clean <- function(raw_noaa_df) {
+  if (!"LOCATION_NAME" %in% colnames(raw_noaa_df)) {
+    stop("Data frame must have column 'LOCATION_NAME'")
+  }
   # Strip COUNTRY from LOCATION_NAME
   raw_noaa_df$LOCATION_NAME <- sub("^[^:]+:[[:space:]]*", "", raw_noaa_df$LOCATION_NAME)
   # Convert LOCATION_NAME to title case

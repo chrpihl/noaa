@@ -23,6 +23,13 @@
 #' dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 #' eq_map(annot_col = "DATE")
 eq_map <- function(df, annot_col) {
+  if (nrow(df) == 0) {
+    stop("Data frame input is empty")
+  }
+  required_cols <- c("LATITUDE", "LONGITUDE", "EQ_PRIMARY", annot_col)
+  if (!all(required_cols %in% colnames(df))) {
+    stop(paste("Data frame must have columns:", required_cols))
+  }
   # Get the base map
   m <- leaflet() %>%
     leaflet::addTiles() %>%  # Add default OpenStreetMap map tiles
@@ -54,6 +61,10 @@ eq_map <- function(df, annot_col) {
 #' dplyr::mutate(popup_text = eq_create_label(.)) %>%
 #' eq_map(annot_col = "popup_text")
 eq_create_label <- function(df) {
+  required_cols <- c("LOCATION_NAME", "EQ_PRIMARY", "TOTAL_DEATHS")
+  if (!all(required_cols %in% colnames(df))) {
+    stop(paste("Data frame must have columns:", required_cols))
+  }
   df_location_cleaned <- eq_location_clean(df)
   popup_text <- apply(df_location_cleaned, 1,
                       FUN = function(x) paste0(
