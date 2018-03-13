@@ -105,4 +105,4 @@ eq_map(annot_col = "popup_text")
 The image below shows the result of running the code above. This is just a still image, but when
 working with the htmlwidget, the map will be interactive.
 
-![Example of plotting earthquake data on an interactive map.](./geo_plot_example.png)
+![Example of plotting earthquake data on an interactive map.](./README-geo_plot_example.png)
