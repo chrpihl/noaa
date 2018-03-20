@@ -34,12 +34,6 @@ test_that("geom_timeline ok scenario", {
   expect_true(any(class(p) == "ggplot"))
 })
 
-
-
-#geom_timeline_label
-#GeomTimelineLabel
-
-
 test_that("geom_timeline_label empty df input is ok", {
   p <- readr::read_delim(file = system.file("extdata", "signif.txt", package="noaa"), delim="\t") %>%
     eq_clean_data() %>% eq_location_clean() %>%
