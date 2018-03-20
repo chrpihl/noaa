@@ -3,6 +3,8 @@
 noaa
 ====
 
+[![Build Status](https://travis-ci.org/chrpihl/noaa.svg?branch=master)](https://travis-ci.org/chrpihl/noaa)
+
 This package was created as a capstone project for the Coursera course "Mastering Software Development in R". The package contains functions to clean and visualize earthquake data from the "U.S. National Oceanographic and Atmospheric Administration" "Significant Earthquakes" data set. The visualizations include plotting the earthquakes along a timeline as well as on an interactive map.
 
 Installation
